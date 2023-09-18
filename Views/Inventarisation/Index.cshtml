@@ -1,0 +1,103 @@
+﻿@{
+    Layout = "_Layout";
+}
+@using Inventarisation.ViewModels
+@using System.Security.Claims;
+@model InventarisationViewModel
+@{
+    if (User.HasClaim(ClaimTypes.Role, "Администратор"))
+    {
+        <a href="Create">Добавить</a>
+    }
+    else
+    {
+        <p class="user-block_text">Вы учавствуете:</p>
+    }
+}
+@{
+    foreach (var item in Model.Contains)
+    {
+        @if (item.End>DateTime.Now)
+        {
+            <a href="Details?InventId=@item.Id">
+                <p class="user-block_text">Название:<span class="user-block_span">@item.Name</span></p>
+                <p class="user-block_text">Начало: <span class="user-block_span">@item.Start.ToString()</span></p>
+                <p class="user-block_text">Окончание: <span class="user-block_span">@item.End.ToString()</span></p>
+            </a>
+        }
+        else
+        {
+            <div>
+                <p class="user-block_text">Название:<span class="user-block_span">@item.Name</span></p>
+                <p class="user-block_text">Начало: <span class="user-block_span">@item.Start.ToString()</span></p>
+                <p class="user-block_text">Окончание: <span class="user-block_span">@item.End.ToString()</span></p>
+            </div> 
+        }
+        if (User.HasClaim(ClaimTypes.Role, "Администратор"))
+        {
+            <a href="#" class="delete-link auditory-item_text" data-id="@item.Id">Удалить</a>
+        }
+    }
+
+    if (!User.HasClaim(ClaimTypes.Role, "Администратор"))
+    {
+        <p class="user-block_text">Остальные:</p>
+    }
+
+    foreach (var item in Model.Other)
+    {
+        if (User.HasClaim(ClaimTypes.Role, "Администратор"))
+        {
+            <a href="Details?InventId=@item.Id" class="user-block">
+                <p class="user-block_text">Название: <span class="user-block_span">@item.Name</span></p>
+                <p class="user-block_text">Начало: <span class="user-block_span">@item.Start.ToString()</span></p>
+                <p class="user-block_text">Окончание: <span class="user-block_span">@item.End.ToString()</span></p>
+            </a>
+            <a href="#" class="delete-link auditory-item_text" data-id="@item.Id">Удалить</a>
+
+        }
+        else
+        {
+            <div>
+                <p class="user-block_text">Название:<span class="user-block_span">@item.Name</span></p>
+                <p class="user-block_text">Начало: <span class="user-block_span">@item.Start.ToString()</span></p>
+                <p class="user-block_text">Окончание: <span class="user-block_span">@item.End.ToString()</span></p>
+            </div>
+            @if (item.End>DateTime.Now)
+            {
+                <form method="post" action="JoinInventarisation?InventId=@item.Id">
+                    <input type="submit" value="Учавствовать"/>
+                </form>
+            }
+
+        }
+    }
+}
+<div id="deleteModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <p>Элемент связан с другими. Уверены, что хотите удалить?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="confirmDelete">Да</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Нет</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $(".delete-link").click(function (e) {
+            e.preventDefault();
+            var id = $(this).data("id");
+            $("#deleteModal").modal("show");
+
+            $("#confirmDelete").click(function () {
+                // Выполните действия по удалению элемента, используя id
+                window.location.href = "Delete?Id=" + id; // Переход на страницу удаления с параметром Id
+            });
+        });
+    });
+</script>

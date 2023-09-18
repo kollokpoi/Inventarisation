@@ -1,0 +1,50 @@
+﻿@{
+    Layout = "_Layout";
+}
+
+@using Inventarisation.Models;
+@model List<User>;
+
+@{
+    if (ViewBag.ErrorMessage != null)
+    {
+        <p class="login-form_error-message">@ViewBag.ErrorMessage</p>
+    }
+}
+<form method="post" enctype="multipart/form-data">
+    <div class="equipment-info_row">
+        <p class="equipment-item_text">Название*:</p>
+        <input name="Name" class="form-control" />
+    </div>
+
+    <div class="equipment-info_row">
+        <p class="equipment-item_text">Короткое название*:</p>
+        <input name="shortName" class="form-control" />
+    </div>
+
+    <div class="equipment-info_row">
+        <p class="equipment-item_text">Ответственный пользователь*:</p>
+        <select name="ResponsibleUserId">
+            @{
+                foreach (var item in Model)
+                {
+                    <option value="@item.Id">@item.Name</option>
+                }
+            }
+        </select>
+    </div>
+
+    <div class="equipment-info_row">
+        <p class="equipment-item_text">Временный ответственный пользователь:</p>
+        <select name="TempResponsibleUserId">
+            @{
+                foreach (var item in Model)
+                {
+                     <option value="@item.Id">@item.Name</option>
+                }
+                    <option value="0">Отсутствует</option>
+            }
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Сохранить</button>
+</form>

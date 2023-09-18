@@ -1,0 +1,106 @@
+﻿@{
+    Layout = "_Layout";
+}
+@using Inventarisation.Models
+@model List<Equipment>
+
+<input type="search" class="searchInput" placeholder="Поиск" />
+<form id="createInventarisationForm">
+    <div class="equipment-info_row">
+        <input name="start" type="date" placeholder="Начало"/>
+        <input name="name" type="text" placeholder="Название" />
+        <input name="end" type="date" placeholder="Конец"/>
+    </div>
+    @{
+        <input type="submit" value="Сохранить"/>
+        foreach (var item in Model)
+        {
+            <div class="equipment-item_parrent">
+                @if (item.Image != null)
+                {
+                    <img class="equipment-item_image" src="data:image/jpg;base64,@Convert.ToBase64String(item.Image)" />
+                }
+                else
+                {
+                    <img class="equipment-item_image" src="/Img/fotoapparat.jpg" />
+                }
+
+                <a href="/Equipment/Info?id=@item.InventNumber" class="equipment-item_info-block">
+                    <p class="equipment-item_text">Название:<span class="equipment-item_span">@item.Name</span> </p>
+                    <p class="equipment-item_text">Аудитория:<span class="equipment-item_span">@item.Auditory.Name</span></p>
+                    <p class="equipment-item_text">Цена: <span class="equipment-item_span price">@item.Price</span></p>
+                    <p class="equipment-item_text">Комментарий: <span class="equipment-item_span">@item.Comment</span></p>
+                    <p class="equipment-item_text">Количество: <span class="equipment-item_span">@item.Count</span></p>
+                </a>
+                <input type="checkbox" class="checkbox" data-property="@item.InventNumber" />
+            </div>
+        }
+    }
+
+</form>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#createInventarisationForm").submit(function (event) {
+            event.preventDefault(); // Предотвращаем стандартное действие отправки формы
+
+            // Создаем объект для хранения данных
+            var data = {
+                Start: $("input[name='start']").val(),
+                End: $("input[name='end']").val(),
+                Name: $("input[name='name']").val(),
+                EquipmentNumbers: []
+            };
+
+            // Обходим все выбранные чекбоксы и добавляем их значения в массив properties
+            $(".checkbox:checked").each(function () {
+                var propertyValue = $(this).data("property");
+                data.EquipmentNumbers.push(propertyValue);
+            });
+
+            if(data.Name!=='' && data.EquipmentNumbers.length>0 && data.End!=='' && data.Start!== '') {
+                if(data.End> data.Start){
+                    var jsonData = JSON.stringify(data);
+
+                    // Отправляем JSON-данные на сервер
+                    $.ajax({
+                        url: window.location.href, // Укажите URL для обработки данных на сервере
+                        type: "POST",
+                        contentType: "application/json; charset=utf-8",
+                        data: jsonData,
+                        success: function (response) {
+                            // Обработка успешного ответа от сервера (по вашему выбору)
+                            window.location.href = "Index"; // Замените "/OtherPage" на URL нужной страницы
+                            console.log("Данные успешно отправлены!");
+                        },
+                        error: function (error) {
+                            // Обработка ошибки (по вашему выбору)
+                            console.error("Произошла ошибка при отправке данных.");
+                        }
+                    });
+                }else{
+                    alert("Дата окончания меньше даты начала");
+                }
+               
+            }else{
+                 alert("Не все поля заполнены");
+            }
+            
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $(".searchInput").on("keyup", function () {
+            var searchText = $(this).val().toLowerCase();
+            $(".equipment-item_parrent").each(function () {
+                var itemText = $(this).find(".equipment-item_span:first").text().toLowerCase();
+                if (itemText.indexOf(searchText) === -1) {
+                    $(this).hide();
+                } else {
+                    $(this).show();
+                }
+            });
+        });
+    });
+</script>

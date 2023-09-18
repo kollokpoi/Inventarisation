@@ -1,0 +1,60 @@
+﻿@{
+    Layout = "_Layout";
+}
+
+@using Inventarisation.ViewModels;
+@model AuditoryUpdateViewModel;
+
+@{
+    if (ViewBag.ErrorMessage != null)
+    {
+        <p class="login-form_error-message">@ViewBag.ErrorMessage</p>
+    }
+}
+<form method="post" enctype="multipart/form-data">
+    <div class="equipment-info_row">
+        <p class="equipment-item_text">Название*:</p>
+        <input name="Name" class="form-control" value="@Model.Auditory.Name"/>
+    </div>
+
+    <div class="equipment-info_row">
+        <p class="equipment-item_text">Короткое название*:</p>
+        <input name="shortName" class="form-control" value="@Model.Auditory.ShortName" />
+    </div>
+
+    <div class="equipment-info_row">
+        <p class="equipment-item_text">Ответственный пользователь*:</p>
+        <select name="ResponsibleUserId">
+            @{
+                foreach (var item in Model.Users)
+                {
+                    if (item.Id == Model.Auditory.ResponsibleUserId)
+                    {
+                        <option value="@item.Id" selected>@item.Name</option>
+                        continue;
+                    }
+                    <option value="@item.Id">@item.Name</option>
+                }
+            }
+        </select>
+    </div>
+
+    <div class="equipment-info_row">
+        <p class="equipment-item_text">Временный ответственный пользователь:</p>
+        <select name="TempResponsibleUserId">
+            @{
+                foreach (var item in Model.Users)
+                {
+                    if (item.Id == Model.Auditory.TempResponsibleUserId)
+                    {
+                        <option value="@item.Id" selected>@item.Name</option>
+                        continue;
+                    }
+                    <option value="@item.Id">@item.Name</option>
+                }
+                <option value="0">Отсутствует</option>
+            }
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Сохранить</button>
+</form>

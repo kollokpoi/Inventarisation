@@ -1,0 +1,119 @@
+﻿@{
+    Layout = "_Layout";
+}
+@using Inventarisation.Models
+@model List<Equipment>
+
+
+
+<input type="search" class="searchInput" placeholder="Поиск"/>
+<div>
+    <label for="sortType">Сортировка:</label>
+    <select id="sortType">
+        <option value="name">По имени</option>
+        <option value="price">Цена по возрастанию</option>
+        <option value="priceFromHigh">Цена по Убыванию</option>
+    </select>
+</div>
+<a href="Add">Добавить</a>
+<a href="~/Scan/Index">Пингануть</a>
+<a href="Import">Импорт</a>
+<a href="Export">Экспорт приема-передачи</a>
+<div class="equipment-list">
+    @{
+        foreach (var item in Model)
+        {
+            <div class="equipment-item_parrent">
+                @if (item.Image!=null)
+                {
+                    <img class="equipment-item_image" src="data:image/jpg;base64,@Convert.ToBase64String(item.Image)" />
+                }
+                else
+                {
+                    <img class="equipment-item_image" src="/Img/fotoapparat.jpg" />
+                }
+
+                <a href="Info?id=@item.InventNumber" class="equipment-item_info-block">
+                    <p class="equipment-item_text">Название:<span class="equipment-item_span">@item.Name</span> </p>
+                    <p class="equipment-item_text">Аудитория:<span class="equipment-item_span">@item.Auditory.Name</span></p>
+                    <p class="equipment-item_text">Цена: <span class="equipment-item_span price">@item.Price</span></p>
+                    <p class="equipment-item_text">Комментарий: <span class="equipment-item_span">@item.Comment</span></p>
+                    <p class="equipment-item_text">Количество: <span class="equipment-item_span">@item.Count</span></p>
+                </a>
+
+                <a href="Update?Id=@item.InventNumber">Изменить</a>
+                <a href="#" class="delete-link auditory-item_text" data-id="@item.InventNumber">Удалить</a>
+
+            </div>
+        }
+    }
+</div>
+<div id="deleteModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <p>Элемент связан с другими. Уверены, что хотите удалить?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="confirmDelete">Да</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Нет</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $(".searchInput").on("keyup", function () {
+            var searchText = $(this).val().toLowerCase();
+            $(".equipment-item_parrent").each(function () {
+                var itemText = $(this).find(".equipment-item_span:first").text().toLowerCase();
+                if (itemText.indexOf(searchText) === -1) {
+                    $(this).hide();
+                } else {
+                    $(this).show();
+                }
+            });
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $("#sortType").change(function () {
+            var selectedValue = $(this).val();
+            var items = $(".equipment-item_parrent");
+
+            if (selectedValue === "name") {
+                items.sort(function (a, b) {
+                    var nameA = $(a).find(".equipment-item_span:eq(0)").text().toUpperCase();
+                    var nameB = $(b).find(".equipment-item_span:eq(0)").text().toUpperCase();
+                    return (nameA < nameB) ? -1 : (nameA > nameB) ? 1 : 0;
+                });
+            } else if (selectedValue === "price") {
+                items.sort(function (a, b) {
+                    var priceA = parseFloat($(a).find(".equipment-item_span.price").text());
+                    var priceB = parseFloat($(b).find(".equipment-item_span.price").text());
+                    return priceA - priceB;
+                });
+            } else if (selectedValue === "priceFromHigh") {
+                items.sort(function (a, b) {
+                    var priceA = parseFloat($(a).find(".equipment-item_span.price").text());
+                    var priceB = parseFloat($(b).find(".equipment-item_span.price").text());
+                    return priceB - priceA;
+                });
+            }
+
+            $(".equipment-list").empty().append(items);
+        });
+        $(".delete-link").click(function (e) {
+            e.preventDefault();
+            var id = $(this).data("id");
+            $("#deleteModal").modal("show");
+
+            $("#confirmDelete").click(function () {
+                // Выполните действия по удалению элемента, используя id
+                window.location.href = "Delete?Id=" + id; // Переход на страницу удаления с параметром Id
+            });
+        });
+    });
+</script>

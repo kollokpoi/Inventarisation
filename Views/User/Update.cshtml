@@ -1,0 +1,68 @@
+﻿@{
+    Layout = "_Layout";
+}
+
+@using Inventarisation.ViewModels;
+@model UserUpdateViewModel;
+
+@{
+    if (ViewBag.ErrorMessage != null)
+    {
+        <p class="login-form_error-message">@ViewBag.ErrorMessage</p>
+    }
+}
+<form method="post" enctype="multipart/form-data">
+    <div class="equipment-info_row">
+        <p class="equipment-item_text">Фамилия:</p>
+        <input name="SecondName" class="form-control" value="@Model.User.SecondName"/>
+    </div>
+    <div class="equipment-info_row">
+        <p class="equipment-item_text">Имя:</p>
+        <input name="Name" class="form-control" value="@Model.User.Name" />
+    </div>
+
+    <div class="equipment-info_row">
+        <p class="equipment-item_text">Отчество:</p>
+        <input name="LastName" class="form-control" value="@Model.User.LastName" />
+    </div>
+    <div class="equipment-info_row">
+        <p class="equipment-item_text">Логин*:</p>
+        <input name="Login" class="form-control" value="@Model.User.Login"/>
+    </div>
+
+    <div class="equipment-info_row">
+        <p class="equipment-item_text">Пароль*:</p>
+        <input name="Password" class="form-control" value="@Model.User.Password" />
+    </div>
+
+     <div class="equipment-info_row">
+        <p class="equipment-item_text">Роль пользователя:</p>
+        <select name="UserRoleId">
+            @{
+                foreach (var item in Model.UserRoles)
+                {
+                    if (item.Id == Model.User.UserRoleId)
+                    {
+                         <option value="@item.Id" selected>@item.Name</option>
+                    }
+                    <option value="@item.Id">@item.Name</option>
+                }
+            }
+        </select>
+    </div>
+    <div class="equipment-info_row">
+        <p class="equipment-item_text">Почта:</p>
+        <input name="Email" class="form-control" value="@Model.User.Email"/>
+    </div>
+
+        <div class="equipment-info_row">
+        <p class="equipment-item_text">Номер телефона:</p>
+        <input name="Phone" class="form-control" pattern="\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}" value="@Model.User.Phone" />
+    </div>
+
+    <div class="equipment-info_row">
+        <p class="equipment-item_text">Адрес:</p>
+        <input name="Adres" class="form-control" value="@Model.User.Adres" />
+    </div>
+    <button type="submit" class="btn btn-primary">Сохранить</button>
+</form>

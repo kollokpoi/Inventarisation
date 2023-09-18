@@ -1,0 +1,91 @@
+﻿@using Inventarisation.Models;
+@{
+    Layout = "_Layout";
+}
+@model List<Consumables>
+<input type="search" class="searchInput" placeholder="Поиск" />
+<a href="Add">Добавить</a>
+@{
+    foreach (var item in Model)
+    {
+        <div class="consumable-holder">
+            <a href="Details?Id=@item.Id" class="equipment-item_parrent">
+                @if (item.Image != null)
+                  {
+                    <img class="equipment-item_image" src="data:image/jpg;base64,@Convert.ToBase64String(item.Image)" />
+                  }
+                  else
+                  {
+                      <img class="equipment-item_image" src="/Img/fotoapparat.jpg" />
+                  }
+                 <div class="equipment-item_info-block">
+                     <p class="equipment-item_text">Название:<span class="equipment-item_span">@item.Name</span> </p>
+                     <p class="equipment-item_text">Описание:<span class="equipment-item_span">@item.Description</span></p>
+                     <p class="equipment-item_text">Дата получения: <span class="equipment-item_span">@item.DateOfCame.Date</span></p>
+                     <p class="equipment-item_text">Количество: <span class="equipment-item_span">@item.Count</span></p>
+                     <p class="equipment-item_text">Ответственный пользователь: <span class="equipment-item_span">@item.ResponsibleUser.GetFullName()</span></p>
+                     @if(item.TempResponsibleUser!=null){
+                        <p class="equipment-item_text">Временно ответственный: <span class="equipment-item_span">@item.TempResponsibleUser.GetFullName()</span></p>
+                     }
+                     else
+                     {
+                        <p class="equipment-item_text">Временно ответственный: <span class="equipment-item_span">Отсутствует</span></p>
+                     }
+                     <p class="equipment-item_text">Тип: <span class="equipment-item_span">@item.ConsumablesType.Name</span></p>
+
+                     
+                 </div>
+            </a>
+            <a href="Update?Id=@item.Id">Изменить</a>
+            <a href="#" class="delete-link auditory-item_text" data-id="@item.Id">Удалить</a>
+            <p class="equipment-info_title">Характеристики:</p>
+            @{
+                foreach (var spec in item.Specifications)
+                {
+                    <p class="equipment-item_text">@spec.Name:<span class="equipment-item_span">@spec.Value</span> </p>
+                }
+            }
+        </div>
+
+    }
+}
+<div id="deleteModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <p>Элемент связан с другими. Уверены, что хотите удалить?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="confirmDelete">Да</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Нет</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $(".searchInput").on("keyup", function () {
+            var searchText = $(this).val().toLowerCase();
+            $(".consumable-holder").each(function () {
+                var itemText = $(this).find(".equipment-item_span:first").text().toLowerCase();
+                if (itemText.indexOf(searchText) === -1) {
+                    $(this).hide();
+                } else {
+                    $(this).show();
+                }
+            });
+        });
+        $(".delete-link").click(function (e) {
+            e.preventDefault();
+            var id = $(this).data("id");
+            $("#deleteModal").modal("show");
+
+            $("#confirmDelete").click(function () {
+                // Выполните действия по удалению элемента, используя id
+                window.location.href = "Delete?Id=" + id; // Переход на страницу удаления с параметром Id
+            });
+        });
+    });
+</script>
+

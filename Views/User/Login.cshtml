@@ -1,0 +1,16 @@
+﻿
+<link rel="stylesheet" href="~/css/style.css" asp-append-version="true" />
+
+<div class="container">
+    <form enctype="multipart/form-data" method="post" class="login-form_body">
+        @{
+            if (ViewBag.ErrorMessage!=null)
+            {
+                <p class="login-form_error-message">@ViewBag.ErrorMessage</p>
+            }
+        }
+        <input placeholder="Логин" name="login" type="text" class="login-form_textbox" />
+        <input placeholder="Пароль" name="password" type="password" class="login-form_textbox" />
+        <input type="submit" class="login-form_submit" />
+    </form>
+</div>

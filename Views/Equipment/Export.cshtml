@@ -1,0 +1,15 @@
+﻿@{
+    Layout = "_Layout";
+}
+@using Inventarisation.Models
+@model List<Direction>
+
+<form method="post" enctype="multipart/form-data">
+    <select name="DirectionID">
+        @foreach (var item in Model)
+        {
+            <option value="@item.Id">@item.Name</option>
+        }
+    </select>
+    <input type="submit" />
+</form>

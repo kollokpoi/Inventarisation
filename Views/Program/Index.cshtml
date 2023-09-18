@@ -1,0 +1,123 @@
+﻿@using Inventarisation.Models
+@{
+    Layout = "_Layout";
+}
+@model List<ProgramClass>;
+
+<input type="search" class="searchInput" placeholder="Поиск" />
+<a href="Add">Добавить</a>
+@{
+    foreach (var item in Model)
+    {
+        <div class="equipment-info_row" >
+            <p class="equipment-info_text" style="opacity:0; display:none;">@item.Id</p>
+            <p class="equipment-info_text">
+                Название:
+                <span class="equipment-info_span">
+                    @item.Name
+                </span>
+            </p>
+            <p class="equipment-info_text">
+                Версия:
+                <span class="equipment-info_span">
+                    @item.Version
+                </span>
+            </p>
+            <p class="equipment-info_text">
+                Разраб:
+                <span class="equipment-info_span">
+                    @item.ProgramCreator.Name
+                </span>
+            </p>
+            <div class="auditory-item_row">
+                  <a href="~/Program/Update?Id=@item.Id">Изменить</a>
+                   <a href="#" class="delete-link auditory-item_text" data-id="@item.Id">Удалить</a>
+            </div>
+        </div>
+
+        <div class="equipment-holder" style="display:none;">
+        </div>
+    }
+}
+<div id="deleteModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <p>Элемент связан с другими. Уверены, что хотите удалить?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="confirmDelete">Да</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Нет</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $(".searchInput").on("keyup", function () {
+            var searchText = $(this).val().toLowerCase();
+            $(".equipment-info_row").each(function () {
+                var itemText = $(this).find(".equipment-info_span:first").text().toLowerCase();
+                if (itemText.indexOf(searchText) === -1) {
+                    $(this).hide();
+                } else {
+                    $(this).show();
+                }
+            });
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $(".equipment-info_row").click(function () {
+            var programId = $(this).find(".equipment-info_text:first").text();
+            var equipmentHolder = $(this).next(".equipment-holder");
+            if (equipmentHolder.is(":visible")) {
+                // Если equipment-holder видимый, то скрыть его
+                equipmentHolder.slideUp("slow");
+            } else {
+                if (equipmentHolder.children().length === 0) {
+                    $.ajax({
+                        url: "GetEquipment?programId=" + programId,
+                        type: "GET",
+                        success: function (data) {
+                            data.forEach(function (item) {
+                                var equipmentItem = `
+                                        <a href="/Equipment/Info?id=${item.inventNumber}" class="equipment-item_parrent">
+                                            <img class="equipment-item_image" src="data:image/jpg;base64,${item.image}" />
+                                            <div class="equipment-item_info-block">
+                                                <p class="equipment-item_text">Название:<span class="equipment-item_span">${item.name}</span></p>
+                                                <p class="equipment-item_text">Аудитория:<span class="equipment-item_span">${item.auditory.name}</span></p>
+                                                <p class="equipment-item_text price">Цена: <span class="equipment-item_span price">${item.price}</span></p>
+                                                <p class="equipment-item_text">Комментарий: <span class="equipment-item_span">${item.comment}</span></p>
+                                            </div>
+                                        </a>
+                                    `;
+                                equipmentHolder.append(equipmentItem);
+                            });
+                            equipmentHolder.slideDown("slow");
+                        },
+                        error: function (error) {
+                            console.log("Error: " + error);
+                        }
+                    });
+                } else {
+                    // Если equipment-holder уже открыт, то плавно скрыть его
+                    equipmentHolder.slideDown("slow");
+                }
+            }
+            
+        });
+        $(".delete-link").click(function (e) {
+            e.preventDefault();
+            var id = $(this).data("id");
+            $("#deleteModal").modal("show");
+
+            $("#confirmDelete").click(function () {
+                // Выполните действия по удалению элемента, используя id
+                window.location.href = "Delete?Id=" + id; // Переход на страницу удаления с параметром Id
+            });
+        });
+    });
+</script>

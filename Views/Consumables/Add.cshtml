@@ -1,0 +1,190 @@
+﻿@{
+    Layout = "_Layout";
+}
+@using Inventarisation.ViewModels
+@model AddConsumablesViewModel;
+<form id="consumableForm">
+    <div class="equipment-item_parrent">
+        <input name="Image" type="file"/>
+        <div class="equipment-item_info-block">
+            <p class="equipment-item_text">Название: <input name="Name" class="equipment-item_span"/></p>
+            <p class="equipment-item_text">Описание: <input name="Description" class="equipment-item_span" /></p>
+            <p class="equipment-item_text">Дата получения: <input name="DateOfCame" type="date" class="equipment-item_span"/></p>
+            <p class="equipment-item_text">Количество: <input name="Count" type="number" class="equipment-item_span"/></p>
+            <p class="equipment-item_text">Ответственный пользователь:</p>
+            <select name="ResponsibleUserId">
+                @{
+                    foreach (var item in Model.Users)
+                    {
+                        <option value="@item.Id">@item.GetFullName()</option>
+                    }
+                }
+            </select>
+            <p class="equipment-item_text">Ответственный пользователь:</p>
+            <select name="TempResponsibleUserId">
+                @{
+                    foreach (var item in Model.Users)
+                    {
+                        <option value="@item.Id">@item.GetFullName()</option>
+                    }
+                    <option value="0">Отсутствует</option>
+                }
+            </select>
+            <p class="equipment-item_text">Тип:</p>
+            <select name="ConsumableType" id="consumableTypes">
+                @{
+                    foreach (var item in Model.ConsumableTypes)
+                    {
+                        <option value="@item.Id">@item.Name</option>
+                    }
+                }
+            </select>
+            <input id="addConsumableTypeValue" />
+            <span class="equipment-item_text" id="addConsumableType">Добавить</span>
+        </div>
+    </div>
+    <p class="equipment-info_title" >Характеристики:</p>
+    <div id="specifications">
+        @{
+            foreach (var item in Model.Specifications)
+            {
+                <p class='equipment-item_text'>@item.Name: <input name='specificationValue' data-property=" @item.Id " /></p>
+            }
+        }
+    </div>
+    <input id="addConsumableSpecificationsValue" />
+    <span class="equipment-item_text" id="addConsumableSpecifications">Добавить</span>
+
+    <input type="submit" value="Сохранить"/>
+</form>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script><script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $("#consumableTypes").on("change", function () {
+        // Получаем выбранный тип расходного материала (ConsumableType)
+        var selectedType = $(this).val();
+
+        // Выполняем AJAX-запрос к серверу
+        $.ajax({
+            url: "GetSpecifications?Id=" + selectedType,
+            method: "GET",
+            dataType: "json", // Укажите, что ожидается JSON-ответ
+            success: function (data) {
+                // Парсим строку JSON в объект JavaScript
+
+                // Очищаем содержимое блока specifications
+                $("#specifications").empty();
+
+                // Обходим полученные объекты и добавляем их в блок specifications
+                $.each(data, function (index, specification) {
+                    var pElement = $("<p class='equipment-item_text'></p>");
+                    pElement.html(specification.name + ":<input name='specificationValue' data-property=" + specification.id + "/>");
+
+                    // Добавляем элемент в блок specifications
+                    $("#specifications").append(pElement);
+                });
+            },
+            error: function (error) {
+                console.error("Произошла ошибка при выполнении запроса.");
+            }
+        });
+    });
+    $("#addConsumableType").on("click", function () {
+        // Выполняем AJAX-запрос к серверу
+        var value = $("#addConsumableTypeValue").val();
+        if(value!==''){
+            $.ajax({
+                url: "AddConsumableType?Name="+value, // Укажите URL для обработки запроса на сервере
+                method: "POST",
+                success: function (response) {
+                    // Полученный ответ содержит поля Id и Name
+
+                    // Создаем новый option для select
+                    var newOption = $("<option></option>");
+                    newOption.val(response.id);
+                    newOption.text(response.name);
+
+                    // Добавляем новый option в select
+                    $("#consumableTypes").append(newOption);
+
+                    // Выбираем новый option (по желанию)
+                    newOption.prop("selected", false);
+                },
+                error: function (error) {
+                    console.error("Произошла ошибка при выполнении запроса.");
+                }
+            });
+        }
+    });
+    $("#addConsumableSpecifications").on("click", function () {
+        // Выполняем AJAX-запрос к серверу
+        var value = $("#addConsumableSpecificationsValue").val();
+        if (value !== '') {
+            $.ajax({
+                url: "AddConsumableSpecifications?Name="+value+"&ConsumableId="+$("#consumableTypes").val(), // Укажите URL для обработки запроса на сервере
+                method: "POST",
+                success: function (response) {
+                    // Полученный ответ содержит поля Id и Name
+                    var pElement = $("<p class='equipment-item_text'></p>");
+                    pElement.html(response.name + ":<input name='specificationValue' data-property=" + response.id + "/>");
+
+                    // Добавляем элемент в блок specifications
+                    $("#specifications").append(pElement);
+                },
+                error: function (error) {
+                    console.error("Произошла ошибка при выполнении запроса.");
+                }
+            });
+        }
+    });
+    $("#consumableForm").submit(function (event) {
+        event.preventDefault(); // Предотвращаем стандартное действие отправки формы
+
+        // Создаем массив объектов для SpecificationValues
+        var specificationValues = [];
+
+        // Обходим все выбранные чекбоксы и добавляем их значения в массив specificationValues
+        $("input[name='specificationValue']").each(function () {
+            var Id = parseInt($(this).data("property"), 10);
+            var Value = $(this).val();
+            specificationValues.push({
+                SpecificationId: Id,
+                Value: Value
+            });
+        });
+
+        // Создаем объект FormData
+        var formData = new FormData();
+
+        // Добавляем файл из input[type="file"]
+        var imageFile = $("input[name='Image']")[0].files[0];
+        formData.append("Image", imageFile);
+
+        // Добавляем остальные поля в FormData
+        formData.append("Name", $("input[name='Name']").val());
+        formData.append("Description", $("input[name='Description']").val());
+        formData.append("DateOfCame", $("input[name='DateOfCame']").val());
+        formData.append("Count", $("input[name='Count']").val());
+        formData.append("ResponsibleUserId", $("select[name='ResponsibleUserId']").val());
+        formData.append("TempResponsibleUserId", $("select[name='TempResponsibleUserId']").val());
+        formData.append("ConsumableType", $("select[name='ConsumableType']").val());
+
+        // Добавляем массив объектов specificationValues как JSON строку
+        formData.append("SpecificationValues", JSON.stringify(specificationValues));
+
+        // Теперь отправляем FormData на сервер
+        $.ajax({
+            url: "Add",
+            method: "POST",
+            data: formData,
+            processData: false,  // Отключаем автоматическую обработку данных
+            contentType: false,  // Отключаем автоматическую установку Content-Type
+            success: function (response) {
+                window.location.href = "Index";
+            },
+            error: function (error) {
+                alert("Произошла ошибка");
+            }
+        });
+    });
+</script>

@@ -1,0 +1,37 @@
+﻿@using Inventarisation.Models
+@{
+    Layout = "_Layout";
+}
+@model List<StoryItem>
+
+    @{
+        foreach (var item in Model)
+        {
+            <div class="equipment-info_row">
+                <p class="equipment-info_text">
+                    Оборудование:
+                    <span class="equipment-info_span">
+                    @item.EquipName
+                    </span>
+                </p>
+                <p class="equipment-info_text">
+                    Дата:
+                    <span class="equipment-info_span">
+                    @item.DateOfMove.Date
+                    </span>
+                </p>
+                 <p class="equipment-info_text">
+                    Аудитория:
+                    <span class="equipment-info_span">
+                    @item.Delegate
+                    </span>
+                </p>
+                <p class="equipment-info_text">
+                    Комментарий:
+                    <span class="equipment-info_span">
+                    @item.Comment
+                    </span>
+                </p>
+            </div>
+        }
+    }

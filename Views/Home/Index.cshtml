@@ -1,0 +1,31 @@
+﻿@using System.Security.Claims;
+@{
+    Layout = "_Layout";
+}
+
+<div class="home_flex-holder">
+    <a href="~/Equipment/Index" class="home_item" style="background-image: url(/Img/image.jpg);">
+        <p class="home_title">Оборудование</p>
+        <img src=""/>
+    </a>
+    <a href="~/Auditory/Index" class="home_item" style="background-image: url(/Img/Auditory.jpg);">
+        <p class="home_title">Аудитории</p>
+    </a>
+    <a href="~/Program/Index" class="home_item" style="background-image: url(/Img/Programs.jpg);">
+        <p class="home_title">Программы</p>
+    </a>
+    <a href="~/Inventarisation/Index" class="home_item" style="background-image: url(/Img/Inventarisation.png);">
+        <p class="home_title">Инвентаризации</p>
+    </a>
+    @{
+        if (User.HasClaim(ClaimTypes.Role, "Администратор"))
+        {
+            <a href="~/User/Index" class="home_item" style="background-image: url(/Img/users.jpg);">
+                <p class="home_title">Пользователи</p>
+            </a>
+        }
+    }
+    <a href="~/Consumables/Index" class="home_item" style="background-image: url(/Img/Consumables.jpg);">
+        <p class="home_title">Расходные материалы</p>
+    </a>
+</div>

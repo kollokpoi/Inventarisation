@@ -1,0 +1,72 @@
+﻿@{
+    Layout = "_Layout";
+}
+@using Inventarisation.Models
+@using System.Security.Claims;
+@model Inventariation
+<input type="search" class="searchInput" placeholder="Поиск" />
+@{
+    foreach (var item in Model.Equipment)
+    {
+        <form method="post" action="UpdateInventarisationEquipment?id=@item.InventEquipId&InventId=@Model.Id" enctype="multipart/form-data" class="inventarisation-form">
+              <div class="equipment-item_parrent">
+                    @if (item.Image!=null)
+                    {
+                        <img class="equipment-item_image" src="data:image/jpg;base64,@Convert.ToBase64String(item.Image)" />
+                    }
+                    else
+                    {
+                        <img class="equipment-item_image" src="/Img/fotoapparat.jpg" />
+                    }
+
+                    <a href="/Equipment/Info?id=@item.InventNumber" class="equipment-item_info-block">
+                        <p class="equipment-item_text">Название:<span class="equipment-item_span">@item.Name</span> </p>
+                        <p class="equipment-item_text">Аудитория:<span class="equipment-item_span">@item.Auditory.Name</span></p>
+                        <p class="equipment-item_text">Цена: <span class="equipment-item_span price">@item.Price</span></p>
+                        <p class="equipment-item_text">Комментарий: <span class="equipment-item_span">@item.Comment</span></p>
+                    <p class="equipment-item_text">Количество: <span class="equipment-item_span">@item.Count</span></p>
+                    </a>
+              </div>
+                @if (!User.HasClaim(ClaimTypes.Role, "Администратор"))
+                {
+                    
+                    @if (!item.Checked)
+                    {
+                        <input name="Count" placeholder="Количество" value="@item.Count" />
+                        <input type="submit" value="Сохранить" />
+                    }
+                    else
+                    {
+                        <input name="Count" placeholder="Количество" value="@item.Count" style="pointer-events: none;" />
+                    }
+                }
+                else{
+                    <input name="Count" style="pointer-events: none;" placeholder="Количество" value="@item.Count" />
+                    <input name="Checked" type="checkbox" style="pointer-events: none;" value="@item.Checked" />
+                }
+
+        </form>
+    }
+    @if (Model.Equipment.Count==0)
+    {
+        <p class="equipment-item_text">В этой инвентаризации не учавствует оборудование, связанное с вами </p>
+    }
+}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $(".searchInput").on("keyup", function () {
+            var searchText = $(this).val().toLowerCase();
+            $(".inventarisation-form").each(function () {
+                var secondName = $(this).find(".equipment-item_span:eq(0)").text().toLowerCase(); // Второй дочерний элемент
+
+                if (secondName.indexOf(searchText) !== -1) {
+                    $(this).show();
+
+                } else {
+                    $(this).hide();
+                }
+            });
+        });
+    });
+</script>

@@ -1,0 +1,18 @@
+﻿@{
+    Layout = "_Layout";
+}
+@using Inventarisation.Models
+@model List<Direction>
+
+@{
+    if (ViewBag.ErrorMessage!=null)
+    {
+        <p class="login-form_error-message">@ViewBag.ErrorMessage</p>
+    }
+}
+
+<form method="post" enctype="multipart/form-data">
+    <input type="file" accept=".xls" name="File" />
+    <input name="Direction" placeholder="Направление"/>
+    <input type="submit" value="Сохранить"/>
+</form>

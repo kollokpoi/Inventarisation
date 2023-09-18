@@ -1,0 +1,41 @@
+﻿@{
+    Layout = "_Layout";
+}
+@using Inventarisation.Models
+@model Consumables
+
+<div class="equipment-item_parrent">
+    @{
+        @if (Model.Image != null)
+        {
+            <img class="equipment-item_image" src="data:image/jpg;base64,@Convert.ToBase64String(Model.Image)" />
+        }
+        else
+        {
+            <img class="equipment-item_image" src="/Img/fotoapparat.jpg" />
+        }
+    }
+     <div class="equipment-item_info-block">
+        <p class="equipment-item_text">Название:<span class="equipment-item_span">@Model.Name</span> </p>
+        <p class="equipment-item_text">Описание:<span class="equipment-item_span">@Model.Description</span></p>
+        <p class="equipment-item_text">Дата получения: <span class="equipment-item_span">@Model.DateOfCame.Date</span></p>
+        <p class="equipment-item_text">Количество: <span class="equipment-item_span">@Model.Count</span></p>
+        <p class="equipment-item_text">Ответственный пользователь: <span class="equipment-item_span">@Model.ResponsibleUser.GetFullName()</span></p>
+        @if (Model.TempResponsibleUser != null)
+        {
+            <p class="equipment-item_text">Временно ответственный: <span class="equipment-item_span">@Model.TempResponsibleUser.GetFullName()</span></p>
+        }
+        else
+        {
+            <p class="equipment-item_text">Временно ответственный: <span class="equipment-item_span">Отсутствует</span></p>
+        }
+        <p class="equipment-item_text">Тип: <span class="equipment-item_span">@Model.ConsumablesType.Name</span></p>
+     </div>
+</div>
+<p class="equipment-info_title">Характеристики:</p>
+@{
+    foreach (var spec in Model.Specifications)
+    {
+        <p class="equipment-item_text">@spec.Name:<span class="equipment-item_span">@spec.Value</span> </p>
+    }
+}

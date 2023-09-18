@@ -1,0 +1,53 @@
+﻿@{
+    Layout = "_Layout";
+}
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/3.1.11/signalr.min.js"></script>
+<div id="scanResults">
+
+</div>
+<script>
+    $(document).ready(function () {
+        var connection = new signalR.HubConnectionBuilder()
+            .withUrl("/scanHub")
+            .build();
+
+        connection.start().then(function () {
+            // После успешного подключения к хабу начинаем сканирование
+            startScanning();
+        }).catch(function (err) {
+            return console.error(err.toString());
+        });
+
+        connection.on("ReceiveScanResult", function (result) {
+            // Обработка результатов сканирования и добавление на страницу
+            // Пример: добавление результатов в div с id "scanResults"
+
+            var jsonObject = JSON.parse(result);
+            console.log(jsonObject);
+            $("#scanResults").append('<div class="equipment-info_row"><p class="equipment-info_text">IP:<span class="equipment-info_span">'+jsonObject.Ip+'</span></p><p class="equipment-info_text">MAC:<span class="equipment-info_span">'+jsonObject.Mac+'</span></p></div>');
+            if (jsonObject.equipment!==null) {
+                $("#scanResults").append('<a href = "/Equipment/Info?id='+jsonObject.equipment.InventNumber+'" class= "equipment-info_row"><p class="equipment-item_text" > Название: <span class="equipment-item_span"> '+jsonObject.equipment.Name+' </p ><p class="equipment-item_text" > Аудитория: <span class="equipment-item_span" > '+jsonObject.equipment.Auditory.Name+'</p ><p class="equipment-item_text" > Цена: <span class="equipment-item_span price" > '+jsonObject.equipment.Price+'</p ><p class="equipment-item_text" > Комментарий: <span class="equipment-item_span" > '+jsonObject.equipment.Comment+'</p ></a>');
+            }
+            
+
+            
+        });
+
+        function startScanning() {
+            $.ajax({
+                type: "POST",
+                url: "ScanNetworkAsync", // Здесь указываете правильный URL для вашего контроллера
+                success: function () {
+                    // Сканирование началось
+                    console.log("Scanning started.");
+                },
+                error: function (error) {
+                    console.error("Error starting scanning: " + error.statusText);
+                }
+            });
+        }
+    });
+</script>

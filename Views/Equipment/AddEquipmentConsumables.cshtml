@@ -1,0 +1,88 @@
+﻿@{
+    Layout = "_Layout";
+}
+@using Inventarisation.Models
+@model List<Consumables>
+
+<form id="createInventarisationForm">
+    @{
+        foreach (var item in Model)
+        {
+            <div class="consumable-holder">
+                <div class="equipment-item_parrent">
+                    @if (item.Image != null)
+                    {
+                        <img class="equipment-item_image" src="data:image/jpg;base64,@Convert.ToBase64String(item.Image)" />
+                    }
+                    else
+                    {
+                        <img class="equipment-item_image" src="/Img/fotoapparat.jpg" />
+                    }
+                    <a href="Details?Id=@item.Id" class="equipment-item_info-block">
+                        <p class="equipment-item_text">Название:<span class="equipment-item_span">@item.Name</span> </p>
+                        <p class="equipment-item_text">Описание:<span class="equipment-item_span">@item.Description</span></p>
+                        <p class="equipment-item_text">Дата получения: <span class="equipment-item_span">@item.DateOfCame.Date</span></p>
+                        <p class="equipment-item_text">Количество: <span class="equipment-item_span">@item.Count</span></p>
+                        <p class="equipment-item_text">Ответственный пользователь: <span class="equipment-item_span">@item.ResponsibleUser.GetFullName()</span></p>
+                        @if (item.TempResponsibleUser != null)
+                        {
+                            <p class="equipment-item_text">Временно ответственный: <span class="equipment-item_span">@item.TempResponsibleUser.GetFullName()</span></p>
+                        }
+                        else
+                        {
+                            <p class="equipment-item_text">Временно ответственный: <span class="equipment-item_span">Отсутствует</span></p>
+                        }
+                        <p class="equipment-item_text">Тип: <span class="equipment-item_span">@item.ConsumablesType.Name</span></p>
+                    </a>
+                    <input type="checkbox" class="checkbox" data-property="@item.Id" />
+                </div>
+                <p class="equipment-info_title">Характеристики:</p>
+                @{
+                    foreach (var spec in item.Specifications)
+                    {
+                        <p class="equipment-item_text">@spec.Name:<span class="equipment-item_span">@spec.Value</span> </p>
+                    }
+                }
+            </div>
+        }
+     }
+     <input type="submit" value="Сохранить">
+</form>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#createInventarisationForm").submit(function (event) {
+            event.preventDefault(); // Предотвращаем стандартное действие отправки формы
+
+            // Создаем объект для хранения данных
+            var data = {
+                EquipmentNumbers: []
+            };
+
+            // Обходим все выбранные чекбоксы и добавляем их значения в массив properties
+            $(".checkbox:checked").each(function () {
+                var propertyValue = parseInt($(this).data("property"));
+                data.EquipmentNumbers.push(propertyValue);
+            });
+
+            var jsonData = JSON.stringify(data);
+
+            // Отправляем JSON-данные на сервер
+            $.ajax({
+                url: window.location.href, // Укажите URL для обработки данных на сервере
+                type: "POST",
+                contentType: "application/json; charset=utf-8",
+                data: jsonData,
+                success: function (response) {
+                    // Обработка успешного ответа от сервера (по вашему выбору)
+                    window.location.href = "Add"; // Замените "/OtherPage" на URL нужной страницы
+                    console.log("Данные успешно отправлены!");
+                },
+                error: function (error) {
+                    // Обработка ошибки (по вашему выбору)
+                    console.error("Произошла ошибка при отправке данных.");
+                }
+            });
+        });
+    });
+</script>

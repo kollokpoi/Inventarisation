@@ -1,0 +1,70 @@
+﻿@using Inventarisation.Models
+@{
+    Layout = "_Layout";
+}
+@model List<Auditory>
+<input type="search" class="searchInput" placeholder="Поиск" />
+<a href="Add">Добавить</a>
+@{
+    foreach (var item in Model)
+    {
+        <div class="auditory-item">
+            <a class="auditory-item_row" href="~/Auditory/Info?Id=@item.Id">
+                <p class="auditory-item_text">Название: <span class="auditory-item_span">@item.Name</span></p>
+                <p class="auditory-item_text">Короткое название: <span class="auditory-item_span">@item.ShortName</span></p>
+            </a>
+            <p class="auditory-item_text">Ответственный пользователь: <span class="auditory-item_span">@item.ResponsibleUser.GetFullName()</span></p>
+            @if(item.TempResponsibleUser!=null){
+                <p class="auditory-item_text">Временно-ответственный пользователь: <span class="auditory-item_span">@item.TempResponsibleUser.GetFullName()</span></p>
+            }
+            else
+            {
+                <p class="auditory-item_text">Временно-ответственный пользователь: <span class="auditory-item_span">Отсутствует</span></p>
+            }
+            <div class="auditory-item_row">
+                <a href="~/Auditory/Update?Id=@item.Id">Изменить</a>
+                <a href="#" class="delete-link auditory-item_text" data-id="@item.Id">Удалить</a>
+            </div>
+        </div>
+    }
+}
+<div id="deleteModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <p>Элемент связан с другими. Уверены, что хотите удалить?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="confirmDelete">Да</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Нет</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $(".searchInput").on("keyup", function () {
+            var searchText = $(this).val().toLowerCase();
+            $(".auditory-item").each(function () {
+                var itemText = $(this).find(".auditory-item_span:first").text().toLowerCase();
+                if (itemText.indexOf(searchText) === -1) {
+                    $(this).hide();
+                } else {
+                    $(this).show();
+                }
+            });
+        });
+        $(".delete-link").click(function (e) {
+            e.preventDefault();
+            var id = $(this).data("id");
+            $("#deleteModal").modal("show");
+
+            $("#confirmDelete").click(function () {
+                // Выполните действия по удалению элемента, используя id
+                window.location.href = "Delete?Id=" + id; // Переход на страницу удаления с параметром Id
+            });
+        });
+    });
+</script>

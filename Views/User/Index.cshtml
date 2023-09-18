@@ -1,0 +1,82 @@
+﻿@{
+    Layout = "_Layout";
+}
+@using Inventarisation.Models
+@model List<User>
+<input type="search" class="searchInput" placeholder="Поиск" />
+<a href="Add">Добавить</a>
+    @{
+        foreach (var item in Model)
+        {
+            <div class="user-block">
+                <p class="user-block_text">Фамилия: <span class="user-block_span">@item.SecondName</span></p>
+                <p class="user-block_text">Имя: <span class="user-block_span">@item.Name</span></p>
+                <p class="user-block_text">Отчество: <span class="user-block_span">@item.LastName</span></p>
+                <p class="user-block_text">Роль в системе: <span class="user-block_span">@item.UserRole.Name</span></p>
+                <p class="user-block_text">Почта: <span class="user-block_span">@item.Email</span></p>
+                <p class="user-block_text">Номер телефона: <span class="user-block_span">@item.Phone</span></p>
+                <p class="user-block_text">Адрес: <span class="user-block_span">@item.Adres</span></p>
+                <p class="user-block_text">Логин: <span class="user-block_span">@item.Login</span></p>
+                <p class="user-block_text">Пароль: <span class="user-block_span">@item.Password</span></p>
+                <div class="auditory-item_row">
+                      <a href="~/User/Update?Id=@item.Id">Изменить</a>
+                      <a href="#" class="delete-link auditory-item_text" data-id="@item.Id">Удалить</a>
+                </div>
+            </div>
+        }
+    }
+<div id="deleteModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <p>Элемент связан с другими. Уверены, что хотите удалить?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="confirmDelete">Да</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Нет</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+        console.log('я родился');
+        let blocks = document.querySelectorAll('.user-block');
+        for(let i = 0; i<blocks.length; i++){
+            blocks[i].addEventListener('click',  function(){
+                blocks[i].classList.toggle('opened')
+                console.log('я хуйня');
+            });
+        }
+    </script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $(".searchInput").on("keyup", function () {
+            var searchText = $(this).val().toLowerCase();
+            $(".user-block").each(function () {
+                var secondName = $(this).find(".user-block_span:eq(0)").text().toLowerCase(); // Второй дочерний элемент
+                var lastName = $(this).find(".user-block_span:eq(2)").text().toLowerCase(); // Второй дочерний элемент
+                var Name = $(this).find(".user-block_span:eq(1)").text().toLowerCase(); // Третий дочерний элемент
+                console.log(lastName)
+                console.log(lastName.indexOf(searchText))
+
+                if (lastName.indexOf(searchText) !== -1 || secondName.indexOf(searchText) !== -1 || lastName.indexOf(searchText) !== -1) {
+                    $(this).show();
+                    
+                } else {
+                    $(this).hide();
+                }
+            });
+        });
+        $(".delete-link").click(function (e) {
+            e.preventDefault();
+            var id = $(this).data("id");
+            $("#deleteModal").modal("show");
+
+            $("#confirmDelete").click(function () {
+                // Выполните действия по удалению элемента, используя id
+                window.location.href = "Delete?Id=" + id; // Переход на страницу удаления с параметром Id
+            });
+        });
+    });
+</script>

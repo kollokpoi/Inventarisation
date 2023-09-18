@@ -1,0 +1,128 @@
+﻿@{
+    Layout = "_Layout";
+}
+@using Inventarisation.ViewModels;
+@addTagHelper "*, Microsoft.AspNet.Mvc.TagHelpers"
+@model EquipmentAddViewModel
+
+@{
+    if (ViewBag.ErrorMessage != null)
+    {
+        <p class="login-form_error-message">@ViewBag.ErrorMessage</p>
+    }
+}
+<form method="post" enctype="multipart/form-data">
+    <div class="equipment-info_row">
+        <p class="equipment-item_text">Направление:</p>
+        <select name="DirectionId">
+            @{
+                foreach (var item in Model.Directions)
+                {
+                    if (item.Id == Model.DirectionId)
+                    {
+                        <option selected value="@item.Id">@item.Name</option>
+                        continue;
+                    }
+                    <option value="@item.Id">@item.Name</option>
+                }
+            }
+        </select>
+        <a href="AddDirection">Добавить</a>
+    </div>
+    <div class="equipment-info_row">
+        <p class="equipment-item_text">Изображение:</p>
+        <input name="Image" type="file" class="form-control-file" />
+    </div>
+    <div class="equipment-info_row">
+        <p class="equipment-item_text">Имя*:</p>
+        <input name="Name" class="form-control" />
+    </div>
+
+    <div class="equipment-info_row">
+        <p class="equipment-item_text">Аудитория*:</p>
+        <select name="AuditoryId">
+            @{
+                foreach (var item in Model.Auditoryes)
+                {
+                    if (item.Id == Model.AuditoryId)
+                    {
+                        <option selected value="@item.Id">@item.Name</option>
+                        continue;
+                    }
+                    <option value="@item.Id">@item.Name</option>
+                }
+            }
+        </select>
+    </div>
+
+    <div class="equipment-info_row">
+        <p class="equipment-item_text">Ответственный пользователь*:</p>
+        <select name="ResponsibleUserId">
+            @{
+                foreach (var item in Model.Users)
+                {
+                    if (item.Id == Model.ResponsibleUserId)
+                    {
+                        <option selected value="@item.Id">@item.Name</option>
+                        continue;
+                    }
+                    <option value="@item.Id">@item.Name</option>
+                }
+            }
+        </select>
+    </div>
+
+    <div class="equipment-info_row">
+        <p class="equipment-item_text">Временный ответственный пользователь:</p>
+        <select name="TempResponsibleUserId">
+            @{
+                foreach (var item in Model.Users)
+                {
+                    if (item.Id == Model.TempResponsibleUserId)
+                    {
+                        <option selected value="@item.Id">@item.Name</option>
+                        continue;
+                    }
+                    <option value="@item.Id">@item.Name</option>
+                }
+                <option value="0">Отсутствует</option>
+            }
+        </select>
+    </div>
+
+    <div class="equipment-info_row">
+        <p class="equipment-item_text">Цена*:</p>
+        <input name="Price" class="form-control" />
+    </div>
+
+    <div class="equipment-info_row">
+        <p class="equipment-item_text">Модель оборудования*:</p>
+        <select name="EquipmentModelId">
+            @{
+                foreach (var item in Model.EquipmentModels)
+                {
+                    if (item.Id == Model.EquipmentModelId)
+                    {
+                        <option selected value="@item.Id">@item.Name</option>
+                        continue;
+                    }
+                    <option value="@item.Id">@item.Name</option>
+                }
+            }
+        </select>
+        <a href="AddEquipmentModel">Добавить</a>
+    </div>
+    <div class="equipment-info_row">
+        <p class="equipment-info_title">
+            Количество:
+            <input type="number" name="Count" class="equipment-info_span" value="@Model.Count">
+
+        </p>
+    </div>
+
+    <div class="equipment-info_row">
+        <p class="equipment-item_text">Комментарий:</p>
+        <textarea name="Comment" class="form-control"></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Сохранить</button>
+</form>
