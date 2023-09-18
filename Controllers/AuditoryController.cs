@@ -17,13 +17,20 @@ namespace Inventarisation.Controllers
             BDWork = bDWork;
         }
         // GET: Auditory
+        /// <summary>
+        /// страница просмотра
+        /// </summary>
+        /// <returns>страница</returns>
         public async Task<IActionResult> Index()
         {
             var model = await BDWork.GetAuditories();
-
-
             return View(model);
         }
+        /// <summary>
+        /// Просмотр информации
+        /// </summary>
+        /// <param name="id">id</param>
+        /// <returns>страница</returns>
         public async Task<IActionResult> Info(int id)
         {
             var model = await BDWork.GetAuditoryInfo(id);
@@ -31,14 +38,24 @@ namespace Inventarisation.Controllers
             return View(model);
         }
 
-
+        /// <summary>
+        /// добавление
+        /// </summary>
+        /// <returns>страница</returns>
         public async Task<IActionResult> Add()
         {
             var model = await BDWork.GetUsers();
 
             return View(model);
         }
-
+        /// <summary>
+        /// добавление
+        /// </summary>
+        /// <param name="Name">название</param>
+        /// <param name="ShortName">короткое название</param>
+        /// <param name="ResponsibleUserId">id ответственного</param>
+        /// <param name="TempResponsibleUserId">id временно-ответственного</param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> Add([Required]string Name, [Required] string ShortName, [Required] int ResponsibleUserId, int TempResponsibleUserId=0)
         {
@@ -68,6 +85,11 @@ namespace Inventarisation.Controllers
             return View(model);
         }
 
+        /// <summary>
+        /// изменение
+        /// </summary>
+        /// <param name="id">id </param>
+        /// <returns>страница</returns>
         public async Task<IActionResult> Update(int id)
         {
             var users = await BDWork.GetUsers();
@@ -80,6 +102,14 @@ namespace Inventarisation.Controllers
 
             return View(model);
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="Name">название</param>
+        /// <param name="ShortName">короткое название</param>
+        /// <param name="ResponsibleUserId">id ответственного</param>
+        /// <param name="TempResponsibleUserId">id временно-ответственного</param>
+        /// <returns>Переход на index</returns>
         [HttpPost]
         public async Task<IActionResult> Update([Required]int id, [Required] string Name, [Required] string ShortName, [Required] int ResponsibleUserId, int TempResponsibleUserId = 0)
         {
@@ -121,7 +151,11 @@ namespace Inventarisation.Controllers
 
             return View(model);
         }
-
+        /// <summary>
+        /// Удаление
+        /// </summary>
+        /// <param name="Id">Id</param>
+        /// <returns></returns>
         public IActionResult Delete(int Id)
         {
             BDWork.DeleteAuditory(Id);

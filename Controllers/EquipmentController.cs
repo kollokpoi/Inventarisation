@@ -26,7 +26,10 @@ namespace Inventarisation.Controllers
         {
             this.BDWork = BDWork;
         }
-
+        /// <summary>
+        /// Страница просмотра оборудования
+        /// </summary>
+        /// <returns>Страница</returns>
         // GET: EquipmentController
         public async Task<IActionResult> Index()
         {
@@ -34,13 +37,21 @@ namespace Inventarisation.Controllers
 
             return View(model);
         }
-
+        /// <summary>
+        /// Просмотр всей информации
+        /// </summary>
+        /// <param name="id">id оборудования</param>
+        /// <returns>Страница</returns>
         public async Task<IActionResult> Info(Guid id)
         {
             var model = await BDWork.GetFullEquipment(id);
 
             return View(model);
         }
+        /// <summary>
+        /// Добавление
+        /// </summary>
+        /// <returns>страница</returns>
         public async Task<IActionResult> Add()
         {
             var model = await BDWork.GetEquipmentAddViewModel();
@@ -48,7 +59,12 @@ namespace Inventarisation.Controllers
             return View(model);
         }
 
-
+        /// <summary>
+        /// Добавление
+        /// </summary>
+        /// <param name="Image">Изображение</param>
+        /// <param name="equipmentAddViewModel">Данные</param>
+        /// <returns>Переход на index</returns>
         [HttpPost]
         public async Task<IActionResult> Add(IFormFile? Image, EquipmentAddViewModel equipmentAddViewModel)
         {
@@ -93,7 +109,11 @@ namespace Inventarisation.Controllers
 
             return View(equipmentAddViewModel);
         }
-
+        /// <summary>
+        /// Обновление информации
+        /// </summary>
+        /// <param name="id">Id</param>
+        /// <returns>Страница</returns>
         public async Task<IActionResult> Update(Guid id)
         {
             var model = await BDWork.GetEquipmentAddViewModel();
@@ -108,7 +128,12 @@ namespace Inventarisation.Controllers
 
             return View(equipmentUpdateViewModel);
         }
-
+        /// <summary>
+        /// Добавление программы
+        /// </summary>
+        /// <param name="programId">Id программы</param>
+        /// <param name="Id">id оборудования</param>
+        /// <returns>результат запроса</returns>
         [HttpPost]
         public IActionResult AddProgram(int programId, [FromQuery]Guid Id)
         {
@@ -122,7 +147,17 @@ namespace Inventarisation.Controllers
                 return BadRequest();
             }
         }
-
+        /// <summary>
+        /// Обновление
+        /// </summary>
+        /// <param name="id">id</param>
+        /// <param name="Auditory">Аудитория</param>
+        /// <param name="Status">Статус</param>
+        /// <param name="ResponsibleUserId">ответственный</param>
+        /// <param name="TempResponsibleUserId">временно-ответственный</param>
+        /// <param name="comment">комментарий</param>
+        /// <param name="Count">количество</param>
+        /// <returns>переход на index</returns>
         [HttpPost]
         public async Task<IActionResult> Update([Required] Guid id, [Required]int Auditory, [Required] int Status, [Required] int ResponsibleUserId, [Required] int TempResponsibleUserId, string comment = "",int Count = 0)
         {
@@ -152,7 +187,12 @@ namespace Inventarisation.Controllers
 
             return View();
         }
-
+        /// <summary>
+        /// Добавление настроек
+        /// </summary>
+        /// <param name="Id">id оборудования</param>
+        /// <param name="settings">настройки</param>
+        /// <returns>резултат добавления</returns>
         [HttpPost]
         public IActionResult AddSettings(Guid Id, EquipmentSettings settings)
         {
@@ -167,11 +207,18 @@ namespace Inventarisation.Controllers
             }
         }
 
-
+        /// <summary>
+        /// добавление модели
+        /// </summary>
+        /// <returns>страница</returns>
         public  IActionResult AddEquipmentModel()
         {
             return View();
         }
+        /// <summary>
+        /// добавление модели
+        /// </summary>
+        /// <returns>результат добавления</returns>
         [HttpPost]
         public IActionResult AddEquipmentModel([Required] string Name, [Required] string Type)
         {
@@ -205,10 +252,19 @@ namespace Inventarisation.Controllers
 
             return View();
         }
+        /// <summary>
+        /// Добавление направления
+        /// </summary>
+        /// <returns>страница</returns>
         public IActionResult AddDirection()
         {
             return View();
         }
+        /// <summary>
+        /// Добавление направления
+        /// </summary>
+        /// <param name="Name">Название</param>
+        /// <returns></returns>
         [HttpPost]
         public IActionResult AddDirection([Required]string Name)
         {
@@ -235,6 +291,11 @@ namespace Inventarisation.Controllers
             return RedirectToAction("Index");
         }
 
+        /// <summary>
+        /// История передвижения
+        /// </summary>
+        /// <param name="Id">id оборудования</param>
+        /// <returns></returns>
         public async Task<IActionResult> StoryOfMove(Guid Id)
         {
             var model = await BDWork.StoryOfMove(Id);
@@ -242,6 +303,11 @@ namespace Inventarisation.Controllers
 
             return View(model);
         }
+       /// <summary>
+       /// История ответственных
+       /// </summary>
+       /// <param name="Id">id оборудования</param>
+       /// <returns></returns>
         public async Task<IActionResult> StoryOfResponce(Guid Id)
         {
             var model = await BDWork.StoryOfResponce(Id);
@@ -264,6 +330,12 @@ namespace Inventarisation.Controllers
         {
             public List<int> EquipmentNumbers { get; set; }
         }
+        /// <summary>
+        /// Добавление расходников
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
         [HttpPost]
         public IActionResult AddEquipmentConsumables(int Id, [FromBody] EquipmentDataModel data)
         {
@@ -271,11 +343,20 @@ namespace Inventarisation.Controllers
             return RedirectToActionPermanent("Add");
         }
 
+        /// <summary>
+        /// импорт
+        /// </summary>
+        /// <returns>Страница</returns>
         public IActionResult Import()
         {
             return View();
         }
-
+        /// <summary>
+        /// страница
+        /// </summary>
+        /// <param name="File">Файл импорта</param>
+        /// <param name="Direction">направление</param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> Import(IFormFile File, string Direction)
         {
@@ -306,101 +387,118 @@ namespace Inventarisation.Controllers
 
                 using (var fs = new MemoryStream(memoryStream.ToArray()))
                 {
-                    HSSFWorkbook workbook = new HSSFWorkbook(fs);
-                    ISheet sheet = workbook.GetSheetAt(0); // Получаем первый лист (индекс 0)
-
-                    if (sheet != null)
+                    try
                     {
-                        int CurrentUserId = 0;
-                        int CurrentType = 0;
-                        int CurrentModel = 0;
-                        string CurrentName = "";
-                        int CurrentCount = 0;
-                        // Итерация по строкам
-                        for (int rowIndex = 2; rowIndex <= sheet.LastRowNum; rowIndex++)
+                        HSSFWorkbook workbook = new HSSFWorkbook(fs);
+                        ISheet sheet = workbook.GetSheetAt(0); // Получаем первый лист (индекс 0)
+
+                        if (sheet != null)
                         {
-                            IRow row = sheet.GetRow(rowIndex);
-
-                            if (row != null)
+                            int CurrentUserId = 0;
+                            int CurrentType = 0;
+                            int CurrentModel = 0;
+                            string CurrentName = "";
+                            int CurrentCount = 0;
+                            // Итерация по строкам
+                            for (int rowIndex = 2; rowIndex <= sheet.LastRowNum; rowIndex++)
                             {
-                                bool addEquip = false;
-                                // Итерация по ячейкам
-                                for (int cellIndex = 0; cellIndex < row.LastCellNum; cellIndex++)
+                                IRow row = sheet.GetRow(rowIndex);
+
+                                if (row != null)
                                 {
-                                    ICell cell = row.GetCell(cellIndex);
-
-                                    if (cell != null)
+                                    bool addEquip = false;
+                                    // Итерация по ячейкам
+                                    for (int cellIndex = 0; cellIndex < row.LastCellNum; cellIndex++)
                                     {
-                                        string cellValue = cell.ToString();
+                                        ICell cell = row.GetCell(cellIndex);
 
-                                        if (cellValue!=null)
+                                        if (cell != null)
                                         {
-                                            string[] values = cellValue.Split(' ');
-                                            bool user = false;
-                                            if (cellIndex == 0)
+                                            string cellValue = cell.ToString();
+
+                                            if (cellValue != null)
                                             {
-                                                if (char.IsUpper(values[0][0]) && char.IsUpper(values[1][0]) && char.IsUpper(values[2][0]))
+                                                string[] values = cellValue.Split(' ');
+                                                bool user = false;
+                                                if (cellIndex == 0)
                                                 {
-                                                    CurrentUserId = await BDWork.GetUserByFullName(values[1], values[0], values[2]);
-                                                    break;
-                                                }
-                                                else
-                                                {
-                                                    values = cellValue.Split(',');
-                                                    if (values.Length>1)
+                                                    if (char.IsUpper(values[0][0]) && char.IsUpper(values[1][0]) && char.IsUpper(values[2][0]))
                                                     {
-                                                        CurrentType = await BDWork.GetEquipmentTypeByNameAsync(values[values.Length - 1]);
+                                                        CurrentUserId = await BDWork.GetUserByFullName(values[1], values[0], values[2]);
+                                                        break;
+                                                    }
+                                                    else
+                                                    {
+                                                        values = cellValue.Split(',');
+                                                        if (values.Length > 1)
+                                                        {
+                                                            CurrentType = await BDWork.GetEquipmentTypeByNameAsync(values[values.Length - 1]);
+                                                        }
+                                                    }
+                                                }
+                                                if (cellIndex == 1)
+                                                {
+                                                    if (cellValue != "")
+                                                    {
+                                                        CurrentModel = await BDWork.GetEquipmentModel(values[values.Length - 2], CurrentType);
+                                                        for (int i = 0; i < values.Length - 2; i++)
+                                                        {
+                                                            CurrentName += values[i] + ' ';
+                                                        }
+                                                    }
+                                                }
+                                                if (cellIndex == 3)
+                                                {
+                                                    if (cellValue != "" && CurrentModel != 0)
+                                                    {
+                                                        CurrentCount = int.Parse(cellValue);
+                                                        addEquip = true;
+
                                                     }
                                                 }
                                             }
-                                            if (cellIndex==1)
-                                            {
-                                                if (cellValue!="")
-                                                {
-                                                    CurrentModel = await BDWork.GetEquipmentModel(values[values.Length-2],CurrentType);
-                                                    for (int i = 0; i < values.Length-2; i++)
-                                                    {
-                                                        CurrentName += values[i] + ' ';
-                                                    }
-                                                }
-                                            }
-                                            if (cellIndex == 3)
-                                            {
-                                                if (cellValue != "" && CurrentModel != 0)
-                                                {
-                                                    CurrentCount = int.Parse(cellValue);
-                                                    addEquip = true;
-              
-                                                }
-                                            }
+
+
+                                            // Обработайте значение ячейки по вашему усмотрению
                                         }
+                                    }
+                                    if (addEquip && CurrentUserId != 0 && CurrentType != 0 && CurrentModel != 0)
+                                    {
 
-
-                                        // Обработайте значение ячейки по вашему усмотрению
+                                        BDWork.AddImportedEquipmentAsync(CurrentName, CurrentUserId, CurrentModel, directionId, CurrentCount);
+                                        CurrentCount = 0;
+                                        CurrentName = string.Empty;
                                     }
                                 }
-                                if (addEquip && CurrentUserId!=0 && CurrentType!=0 && CurrentModel!=0)
-                                {
 
-                                    BDWork.AddImportedEquipmentAsync(CurrentName, CurrentUserId, CurrentModel, directionId, CurrentCount);
-                                    CurrentCount = 0;
-                                    CurrentName= string.Empty;
-                                }
                             }
-
                         }
                     }
+                    catch
+                    {
+                        return View();
+                    }
+                    
                 }
             }
             return RedirectToAction("Index");
         }
 
+        /// <summary>
+        /// экспорт
+        /// </summary>
+        /// <returns>страница</returns>
         public async Task<IActionResult> Export()
         {
             var model = await BDWork.GetDirections();
             return View(model);
         }
 
+        /// <summary>
+        /// Экспорт акта передачи
+        /// </summary>
+        /// <param name="DirectionID">id направления</param>
+        /// <returns>Фаqk</returns>
         [HttpPost]
         public async Task<IActionResult> Export([Required]int DirectionID)
         {

@@ -22,12 +22,19 @@ namespace Inventarisation.Controllers
         }
 
         // GET: ConsumablesController
+        /// <summary>
+        /// Страница просмотра
+        /// </summary>
+        /// <returns>страница</returns>
         public async Task<IActionResult> Index()
         {
             var model = await BDWork.GetConsumables();
             return View(model);
         }
-
+        /// <summary>
+        /// Страница добавления
+        /// </summary>
+        /// <returns>страница</returns>
         public async Task<IActionResult> Add()
         {
             AddConsumablesViewModel viewModel = new AddConsumablesViewModel();
@@ -41,7 +48,19 @@ namespace Inventarisation.Controllers
 
             return View(viewModel);
         }
-
+        /// <summary>
+        /// добавление
+        /// </summary>
+        /// <param name="Image">изображение</param>
+        /// <param name="Name">имя</param>
+        /// <param name="Description">описание</param>
+        /// <param name="DateOfCame">дата получения</param>
+        /// <param name="Count">количество</param>
+        /// <param name="ResponsibleUserId">ответственный</param>
+        /// <param name="TempResponsibleUserId">временно-ответственный</param>
+        /// <param name="ConsumableType">тип расходника</param>
+        /// <param name="SpecificationValues">спецификации</param>
+        /// <returns>переход на index</returns>
         [HttpPost]
         public async Task<IActionResult> Add(IFormFile Image,[Required]string Name, string Description, [Required] DateTime DateOfCame, [Required] int Count, [Required] int ResponsibleUserId, int TempResponsibleUserId, int ConsumableType, string SpecificationValues)
         {
@@ -82,13 +101,21 @@ namespace Inventarisation.Controllers
             }
             return BadRequest();
         }
-
+        /// <summary>
+        /// просмотр деталей
+        /// </summary>
+        /// <param name="Id">id расходника</param>
+        /// <returns>страница</returns>
         public async Task<IActionResult> Details(int Id)
         {
             var model = await BDWork.GetConsumable(Id);
             return View(model);
         }
-
+        /// <summary>
+        /// изменение
+        /// </summary>
+        /// <param name="Id">id</param>
+        /// <returns>страница</returns>
         public async Task<IActionResult> Update(int Id)
         {
             var model = await BDWork.GetConsumable(Id);
@@ -99,7 +126,14 @@ namespace Inventarisation.Controllers
 
             return View(viewModel);
         }
-
+        /// <summary>
+        /// Изменение
+        /// </summary>
+        /// <param name="Id">id</param>
+        /// <param name="Count">количество</param>
+        /// <param name="ResponsibleUserId">ответственный</param>
+        /// <param name="TempResponsibleUserId">временно ответственный</param>
+        /// <returns>переход на index</returns>
         [HttpPost]
         public IActionResult Update(int Id, int Count, int ResponsibleUserId, int TempResponsibleUserId)
         {
@@ -112,7 +146,11 @@ namespace Inventarisation.Controllers
             var model = await BDWork.GetConsumableSpecifications(Id);
             return model;
         }
-
+        /// <summary>
+        /// Добавление типа расходника
+        /// </summary>
+        /// <param name="Name">название</param>
+        /// <returns>Тип расходника</returns>
         [HttpPost]
         public async Task<ConsumablesType> AddConsumableType(string Name)
         {
@@ -124,7 +162,12 @@ namespace Inventarisation.Controllers
             };
             return type;
         }
-
+        /// <summary>
+        /// добавление спецификации расходника
+        /// </summary>
+        /// <param name="Name">название</param>
+        /// <param name="ConsumableId">расходникд</param>
+        /// <returns>спецификация</returns>
         [HttpPost]
         public async Task<Specifications> AddConsumableSpecifications(string Name, int ConsumableId)
         {
@@ -136,7 +179,11 @@ namespace Inventarisation.Controllers
             };
             return type;
         }
-
+        /// <summary>
+        /// удаление
+        /// </summary>
+        /// <param name="Id">id</param>
+        /// <returns>переход на index</returns>
         public IActionResult Delete(int Id)
         {
             BDWork.DeleteConsumable(Id);
